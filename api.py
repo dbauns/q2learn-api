@@ -6,6 +6,7 @@ from q2learn.services import Q2Service, Q2Error
 from q2learn.models import (
     Learner,
     Tutor,
+    TutorStatus,
     EdxCourse,
     Cohort,
     Session,
@@ -83,6 +84,8 @@ class DeliverSessionRequest(BaseModel):
     tutor_id: str
     duration_hours: int
 
+class VerifyTutorRequest(BaseModel):
+    tutor_id: str
 
 @app.get("/")
 def root():
@@ -218,4 +221,18 @@ def deliver_session(body: DeliverSessionRequest):
     return {
         "session_id": session.id,
         "status": session.status.value
+    }
+
+@app.post("/tutors/verify")
+def verify_tutor(body: VerifyTutorRequest):
+
+    tutor = tutors[body.tutor_id]
+
+    tutor.status = TutorStatus.VERIFIED
+    tutor.payout_verified = True
+
+    return {
+        "id": tutor.id,
+        "status": tutor.status.value,
+        "payout_verified": tutor.payout_verified
     }
