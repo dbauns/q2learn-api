@@ -70,6 +70,11 @@ class EnrollLearner(BaseModel):
     learner_id: str
     course_hours: int
 
+class DeliverSessionRequest(BaseModel):
+    cohort_id: str
+    tutor_id: str
+    duration_hours: int
+
 
 @app.get("/")
 def root():
