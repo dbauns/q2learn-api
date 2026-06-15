@@ -65,6 +65,11 @@ class CreateCohort(BaseModel):
     tutor_id: str
     title: str
 
+class EnrollLearner(BaseModel):
+    cohort_id: str
+    learner_id: str
+    course_hours: int
+
 
 @app.get("/")
 def root():
@@ -157,4 +162,22 @@ def create_cohort(body: CreateCohort):
         "capacity": cohort.capacity,
         "enrolled": len(cohort.learner_ids),
         "status": cohort.status.value
+    }
+
+@app.post("/cohorts/enroll")
+def enroll_learner(body: EnrollLearner):
+
+    cohort = cohorts[body.cohort_id]
+
+    q2.enroll(
+        cohort=cohort,
+        learner_id=body.learner_id,
+        course_hours=body.course_hours
+    )
+
+    return {
+        "ok": True,
+        "cohort_id": cohort.id,
+        "enrolled": len(cohort.learner_ids),
+        "seats_left": cohort.seats_left
     }
