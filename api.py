@@ -129,3 +129,32 @@ def create_tutor(body: CreateTutor):
         "status": tutor.status.value,
         "payout_verified": tutor.payout_verified
     }
+
+@app.post("/cohorts")
+def create_cohort(body: CreateCohort):
+
+    course = EdxCourse(
+        code=body.course_code,
+        title=body.course_title,
+        provider=body.provider,
+        total_hours=body.total_hours
+    )
+
+    courses[course.id] = course
+
+    cohort = Cohort(
+        course_id=course.id,
+        tutor_id=body.tutor_id,
+        title=body.title
+    )
+
+    cohorts[cohort.id] = cohort
+
+    return {
+        "cohort_id": cohort.id,
+        "course_id": course.id,
+        "title": cohort.title,
+        "capacity": cohort.capacity,
+        "enrolled": len(cohort.learner_ids),
+        "status": cohort.status.value
+    }
