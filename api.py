@@ -236,3 +236,10 @@ def verify_tutor(body: VerifyTutorRequest):
         "status": tutor.status.value,
         "payout_verified": tutor.payout_verified
     }
+
+@app.get("/tutors/{tutor_id}/balance")
+def tutor_balance(tutor_id: str):
+
+    return {
+        "accrued_balance": q2.tutor_accrued_balance(tutor_id)
+    }
