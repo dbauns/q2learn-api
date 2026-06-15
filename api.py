@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from q2learn.ledger import Ledger
 from q2learn.services import Q2Service, Q2Error
-from q2learn.models import Learner
+from q2learn.models import Learner, Tutor
 from q2learn.payments import PaymentProvider, PayoutProvider, PayResult
 
 
@@ -29,7 +29,7 @@ q2 = Q2Service(
 )
 
 learners = {}
-
+tutors = {}
 
 # ---- API ----
 
@@ -45,6 +45,10 @@ class CreateLearner(BaseModel):
 
 
 class TopUpRequest(BaseModel):
+    class CreateTutor(BaseModel):
+    email: str
+    display_name: str
+    field_of_expertise: str
     learner_id: str
     amount_cents: int
 
@@ -91,4 +95,24 @@ def top_up(body: TopUpRequest):
 def credits(learner_id: str):
     return {
         "credits": q2.credit_balance(learner_id)
+    }
+
+@app.post("/tutors")
+def create_tutor(body: CreateTutor):
+
+    tutor = Tutor(
+        email=body.email,
+        display_name=body.display_name,
+        field_of_expertise=body.field_of_expertise
+    )
+
+    tutors[tutor.id] = tutor
+
+    return {
+        "id": tutor.id,
+        "email": tutor.email,
+        "display_name": tutor.display_name,
+        "field_of_expertise": tutor.field_of_expertise,
+        "status": tutor.status.value,
+        "payout_verified": tutor.payout_verified
     }
