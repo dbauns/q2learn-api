@@ -45,12 +45,14 @@ class CreateLearner(BaseModel):
 
 
 class TopUpRequest(BaseModel):
-    class CreateTutor(BaseModel):
+    learner_id: str
+    amount_cents: int
+
+
+class CreateTutor(BaseModel):
     email: str
     display_name: str
     field_of_expertise: str
-    learner_id: str
-    amount_cents: int
 
 
 @app.get("/")
