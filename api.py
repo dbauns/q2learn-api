@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from q2learn.ledger import Ledger
 from q2learn.services import Q2Service, Q2Error
-from q2learn.models import Learner, Tutor
+from q2learn.models import Learner, Tutor, EdxCourse, Cohort
 from q2learn.payments import PaymentProvider, PayoutProvider, PayResult
 
 
@@ -30,6 +30,8 @@ q2 = Q2Service(
 
 learners = {}
 tutors = {}
+courses = {}
+cohorts = {}
 
 # ---- API ----
 
@@ -53,6 +55,15 @@ class CreateTutor(BaseModel):
     email: str
     display_name: str
     field_of_expertise: str
+
+
+class CreateCohort(BaseModel):
+    course_code: str
+    course_title: str
+    provider: str
+    total_hours: int
+    tutor_id: str
+    title: str
 
 
 @app.get("/")
