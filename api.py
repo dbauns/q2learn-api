@@ -3,7 +3,14 @@ from pydantic import BaseModel
 
 from q2learn.ledger import Ledger
 from q2learn.services import Q2Service, Q2Error
-from q2learn.models import Learner, Tutor, EdxCourse, Cohort
+from q2learn.models import (
+    Learner,
+    Tutor,
+    EdxCourse,
+    Cohort,
+    Session,
+    now
+)
 from q2learn.payments import PaymentProvider, PayoutProvider, PayResult
 
 
@@ -32,6 +39,7 @@ learners = {}
 tutors = {}
 courses = {}
 cohorts = {}
+sessions = {}
 
 # ---- API ----
 
@@ -185,4 +193,29 @@ def enroll_learner(body: EnrollLearner):
         "cohort_id": cohort.id,
         "enrolled": len(cohort.learner_ids),
         "seats_left": cohort.seats_left
+    }
+
+@app.post("/sessions/deliver")
+def deliver_session(body: DeliverSessionRequest):
+
+    cohort = cohorts[body.cohort_id]
+    tutor = tutors[body.tutor_id]
+
+    session = Session(
+        cohort_id=cohort.id,
+        scheduled_at=now(),
+        duration_hours=body.duration_hours
+    )
+
+    sessions[session.id] = session
+
+    q2.deliver_session(
+        cohort=cohort,
+        tutor=tutor,
+        session=session
+    )
+
+    return {
+        "session_id": session.id,
+        "status": session.status.value
     }
