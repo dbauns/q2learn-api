@@ -1,4 +1,3 @@
-```python
 """
 Q2Learn services -- the platform logic.
 
@@ -209,4 +208,3 @@ class Q2Service:
                 memo=f"payout tutor={tutor.id} ${amount / 100} ref={res.ref}",
             )
         )
-```
