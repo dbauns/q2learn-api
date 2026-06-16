@@ -55,39 +55,35 @@ class Q2Service:
 
     # -- enrollment (prepaid, default) ------------------------------------ #
     def enroll(self, cohort: Cohort, learner_id: str, course_hours: int) -> JournalEntry:
-        if cohort.status != CohortStatus.OPEN:
-            raise Q2Error("cohort not open for enrollment")
-        if cohort.seats_left <= 0:
-            raise Q2Error("cohort full")
-        if learner_id in cohort.learner_ids:
-            raise Q2Error("already enrolled")
+    if cohort.status != CohortStatus.OPEN:
+        raise Q2Error("cohort not open for enrollment")
+    if cohort.seats_left <= 0:
+        raise Q2Error("cohort full")
+    if learner_id in cohort.learner_ids:
+        raise Q2Error("already enrolled")
 
-cost = LEARNER_FEE_PER_HOUR_CENTS * course_hours
+    cost = LEARNER_FEE_PER_HOUR_CENTS * course_hours
 
-balance = self.credit_balance(learner_id)
+    balance = self.credit_balance(learner_id)
+    print(f"learner={learner_id} balance={balance} cost={cost}")
 
-print(
-    f"learner={learner_id} "
-    f"balance={balance} "
-    f"cost={cost}"
-)
+    if balance < cost:
+        raise Q2Error("insufficient credits to enroll")
 
-if balance < cost:
-    raise Q2Error("insufficient credits to enroll")
-
-entry = self._l.post(
-    JournalEntry(
-        type=EntryType.ENROLLMENT,
-        postings=(
-            Posting(learner_acct(learner_id), -cost),
-            Posting(SETTLEMENT, +cost),
-        ),
-        memo=f"enroll cohort={cohort.id} {course_hours}h @ "
-             f"${LEARNER_FEE_PER_HOUR_CENTS/100}/h = ${cost/100}",
+    entry = self._l.post(
+        JournalEntry(
+            type=EntryType.ENROLLMENT,
+            postings=(
+                Posting(learner_acct(learner_id), -cost),
+                Posting(SETTLEMENT, +cost),
+            ),
+            memo=f"enroll cohort={cohort.id} {course_hours}h @ "
+                 f"${LEARNER_FEE_PER_HOUR_CENTS/100}/h = ${cost/100}",
+        )
     )
-)
-        cohort.learner_ids.append(learner_id)
-        return entry
+
+    cohort.learner_ids.append(learner_id)
+    return entry
 
     # -- session delivery: accrue tutor + recognise platform spread ------- #
     def deliver_session(self, cohort: Cohort, tutor: Tutor, session: Session) -> JournalEntry:
