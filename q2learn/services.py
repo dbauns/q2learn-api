@@ -57,8 +57,10 @@ class Q2Service:
     def enroll(self, cohort: Cohort, learner_id: str, course_hours: int) -> JournalEntry:
     if cohort.status != CohortStatus.OPEN:
         raise Q2Error("cohort not open for enrollment")
+     
     if cohort.seats_left <= 0:
         raise Q2Error("cohort full")
+     
     if learner_id in cohort.learner_ids:
         raise Q2Error("already enrolled")
 
