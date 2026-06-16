@@ -54,7 +54,7 @@ class Q2Service:
         return self._l.balance(learner_acct(learner_id))
 
     # -- enrollment (prepaid, default) ------------------------------------ #
-    def enroll(self, cohort: Cohort, learner_id: str, course_hours: int) -> JournalEntry:
+def enroll(self, cohort: Cohort, learner_id: str, course_hours: int) -> JournalEntry:
     if cohort.status != CohortStatus.OPEN:
         raise Q2Error("cohort not open for enrollment")
      
