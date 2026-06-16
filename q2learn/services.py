@@ -62,21 +62,23 @@ class Q2Service:
         if learner_id in cohort.learner_ids:
             raise Q2Error("already enrolled")
 
-        cost = LEARNER_FEE_PER_HOUR_CENTS * course_hours
-        if self.credit_balance(learner_id) < cost:
-            raise Q2Error("insufficient credits to enroll")
+cost = LEARNER_FEE_PER_HOUR_CENTS * course_hours
 
-        # Prepaid: learner credits -> platform settlement (held against delivery).
-        # Revenue/tutor split is recognised per delivered session, not at enrol.
-        entry = self._l.post(JournalEntry(
-            type=EntryType.ENROLLMENT,
-            postings=(
-                Posting(learner_acct(learner_id), -cost),
-                Posting(SETTLEMENT, +cost),
-            ),
-            memo=f"enroll cohort={cohort.id} {course_hours}h @ "
-                 f"${LEARNER_FEE_PER_HOUR_CENTS/100}/h = ${cost/100}",
-        ))
+balance = self.credit_balance(learner_id)
+print(f"learner={learner_id} balance={balance} cost={cost}")
+
+if balance < cost:
+    raise Q2Error("insufficient credits to enroll")
+
+entry = self._l.post(JournalEntry(
+    type=EntryType.ENROLLMENT,
+    postings=(
+        Posting(learner_acct(learner_id), -cost),
+        Posting(SETTLEMENT, +cost),
+    ),
+    memo=f"enroll cohort={cohort.id} {course_hours}h @ "
+         f"${LEARNER_FEE_PER_HOUR_CENTS/100}/h = ${cost/100}",
+))
         cohort.learner_ids.append(learner_id)
         return entry
 
