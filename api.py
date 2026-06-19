@@ -214,6 +214,11 @@ def tutor_balance(tutor_id: str):
     }
 
 
+@app.get("/tutors")
+def list_tutors():
+    return list(tutors.values())
+
+
 @app.post("/tutors/payout")
 def payout_tutor(body: PayoutRequest):
 
