@@ -324,3 +324,7 @@ def deliver_session(body: DeliverSessionRequest):
         "session_id": session.id,
         "status": session.status.value
     }
+
+@app.get("/learners")
+def list_learners():
+    return list(learners.values())
