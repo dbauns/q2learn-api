@@ -135,26 +135,6 @@ def credits(learner_id: str):
         "credits": q2.credit_balance(learner_id)
     }
 
-@app.post("/tutors")
-def create_tutor(body: CreateTutor):
-
-    tutor = Tutor(
-        email=body.email,
-        display_name=body.display_name,
-        field_of_expertise=body.field_of_expertise
-    )
-
-    tutors[tutor.id] = tutor
-
-    return {
-        "id": tutor.id,
-        "email": tutor.email,
-        "display_name": tutor.display_name,
-        "field_of_expertise": tutor.field_of_expertise,
-        "status": tutor.status.value,
-        "payout_verified": tutor.payout_verified
-    }
-
 @app.post("/cohorts")
 def create_cohort(body: CreateCohort):
 
@@ -227,6 +207,26 @@ def deliver_session(body: DeliverSessionRequest):
         "status": session.status.value
     }
 
+@app.post("/tutors")
+def create_tutor(body: CreateTutor):
+
+    tutor = Tutor(
+        email=body.email,
+        display_name=body.display_name,
+        field_of_expertise=body.field_of_expertise
+    )
+
+    tutors[tutor.id] = tutor
+
+    return {
+        "id": tutor.id,
+        "email": tutor.email,
+        "display_name": tutor.display_name,
+        "field_of_expertise": tutor.field_of_expertise,
+        "status": tutor.status.value,
+        "payout_verified": tutor.payout_verified
+    }
+
 @app.post("/tutors/verify")
 def verify_tutor(body: VerifyTutorRequest):
 
@@ -246,4 +246,19 @@ def tutor_balance(tutor_id: str):
 
     return {
         "accrued_balance": q2.tutor_accrued_balance(tutor_id)
+    }
+
+@app.post("/tutors/payout")
+def payout_tutor(body: PayoutRequest):
+
+    tutor = tutors[body.tutor_id]
+
+    entry = q2.payout_tutor(
+        tutor=tutor,
+        amount_cents=body.amount_cents
+    )
+
+    return {
+        "ok": True,
+        "amount_paid": abs(entry.postings[0].amount)
     }
