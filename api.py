@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from q2learn.ledger import Ledger
@@ -168,6 +168,9 @@ def learner_credits(learner_id: str):
 
 @app.get("/learners/{learner_id}")
 def get_learner(learner_id: str):
+    if learner_id not in learners:
+        raise HTTPException(status_code=404, detail="Learner not found")
+
     return learners[learner_id]
 
 
