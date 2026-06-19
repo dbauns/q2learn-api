@@ -166,6 +166,11 @@ def learner_credits(learner_id: str):
     }
 
 
+@app.get("/learners/{learner_id}")
+def get_learner(learner_id: str):
+    return learners[learner_id]
+
+
 # ------------------------------------------------------------------
 # Tutors
 # ------------------------------------------------------------------
@@ -217,6 +222,11 @@ def tutor_balance(tutor_id: str):
 @app.get("/tutors")
 def list_tutors():
     return list(tutors.values())
+
+
+@app.get("/tutors/{tutor_id}")
+def get_tutor(tutor_id: str):
+    return tutors[tutor_id]
 
 
 @app.post("/tutors/payout")
@@ -272,6 +282,11 @@ def create_cohort(body: CreateCohort):
 @app.get("/cohorts")
 def list_cohorts():
     return list(cohorts.values())
+
+
+@app.get("/cohorts/{cohort_id}")
+def get_cohort(cohort_id: str):
+    return cohorts[cohort_id]
 
 
 @app.post("/cohorts/enroll")
@@ -339,6 +354,11 @@ def deliver_session(body: DeliverSessionRequest):
 @app.get("/sessions")
 def list_sessions():
     return list(sessions.values())
+
+
+@app.get("/sessions/{session_id}")
+def get_session(session_id: str):
+    return sessions[session_id]
 
 
 @app.get("/learners")
