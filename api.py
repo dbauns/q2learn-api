@@ -269,6 +269,11 @@ def create_cohort(body: CreateCohort):
     }
 
 
+@app.get("/cohorts")
+def list_cohorts():
+    return list(cohorts.values())
+
+
 @app.post("/cohorts/enroll")
 def enroll_learner(body: EnrollLearner):
 
@@ -329,6 +334,12 @@ def deliver_session(body: DeliverSessionRequest):
         "session_id": session.id,
         "status": session.status.value
     }
+
+
+@app.get("/sessions")
+def list_sessions():
+    return list(sessions.values())
+
 
 @app.get("/learners")
 def list_learners():
