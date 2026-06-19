@@ -229,6 +229,9 @@ def list_tutors():
 
 @app.get("/tutors/{tutor_id}")
 def get_tutor(tutor_id: str):
+    if tutor_id not in tutors:
+        raise HTTPException(status_code=404, detail="Tutor not found")
+
     return tutors[tutor_id]
 
 
@@ -289,6 +292,9 @@ def list_cohorts():
 
 @app.get("/cohorts/{cohort_id}")
 def get_cohort(cohort_id: str):
+    if cohort_id not in cohorts:
+        raise HTTPException(status_code=404, detail="Cohort not found")
+
     return cohorts[cohort_id]
 
 
@@ -361,6 +367,9 @@ def list_sessions():
 
 @app.get("/sessions/{session_id}")
 def get_session(session_id: str):
+    if session_id not in sessions:
+        raise HTTPException(status_code=404, detail="Session not found")
+
     return sessions[session_id]
 
 
