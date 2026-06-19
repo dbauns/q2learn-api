@@ -87,6 +87,10 @@ class DeliverSessionRequest(BaseModel):
 class VerifyTutorRequest(BaseModel):
     tutor_id: str
 
+class PayoutRequest(BaseModel):
+    tutor_id: str
+    amount_cents: int | None = None
+
 @app.get("/")
 def root():
     return {"message": "Q2Learn API is running"}
