@@ -17,4 +17,6 @@ Base = declarative_base()
 
 from db_models import LearnerModel
 
+print("Creating tables...")
+
 Base.metadata.create_all(bind=engine)
