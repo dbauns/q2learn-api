@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from db_models import LearnerModel
 from database import engine, get_db
 
 from q2learn.ledger import Ledger
@@ -127,14 +128,24 @@ def root():
 # ------------------------------------------------------------------
 
 @app.post("/learners")
-def create_learner(body: CreateLearner):
+def create_learner(
+    body: CreateLearner,
+    db: Session = Depends(get_db)
+):
 
     learner = Learner(
         email=body.email,
         display_name=body.display_name
     )
 
-    learners[learner.id] = learner
+    learner_model = LearnerModel(
+        id=learner.id,
+        email=learner.email,
+        display_name=learner.display_name
+    )
+
+    db.add(learner_model)
+    db.commit()
 
     return {
         "id": learner.id,
