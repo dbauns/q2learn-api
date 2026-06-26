@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from database import engine
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from database import engine, get_db
 
 from q2learn.ledger import Ledger
 from q2learn.services import Q2Service, Q2Error
